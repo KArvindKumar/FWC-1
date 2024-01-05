@@ -1,8 +1,0 @@
-There are two input
-B_PIN=2
-C_PIN=3
-There is one output
-OUT_PIN=13
-Setup() this is a function that set's the input pins as input's with pull-up resistor and output pin as output.
-loop() this read's value of B and C, and calculates as !B.C using this logic and writes the result to output pin.
-This is an AND operator.  
