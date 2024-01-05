@@ -1,0 +1,212 @@
+
+K-MAP:	
+
+A Karnaugh Map, often abbreviated as K-map, is a graphical representation used in digital design for simplifying Boolean algebra expressions. It is particularly useful for minimizing logic functions and optimizing digital circuits. The K-map method was developed by Maurice Karnaugh, and it provides a systematic approach for simplifying Boolean expressions.
+
+### Basic Concepts:
+
+1. **Variables:**
+   - A Boolean function is expressed in terms of binary variables (usually denoted by letters such as A, B, C, etc.), their complements (A', B', C', etc.), and the logical operators (AND, OR, NOT).
+
+2. **Truth Table:**
+   - Before creating a K-map, it's necessary to construct a truth table that lists all possible input combinations and their corresponding output values for a given Boolean function.
+
+3. **Karnaugh Map Structure:**
+   - A K-map is a grid where each cell represents a possible combination of input values. The number of cells is determined by the number of variables in the Boolean function.
+
+   - For example, a 2-variable K-map will have 2^2 = 4 cells, and a 3-variable K-map will have 2^3 = 8 cells.
+
+   - Adjacent cells in a K-map differ by only one variable's value (binary digit).
+
+### K-map Rules:
+
+1. **Filling in the K-map:**
+   - Based on the truth table, place the corresponding output values in the cells of the K-map.
+
+2. **Grouping Cells:**
+   - Group adjacent cells that contain 1s (or 0s) in powers of 2 (1, 2, 4, 8, etc.). Each group represents a term in the simplified Boolean expression.
+
+3. **Wrapping Around Edges:**
+   - K-maps are often arranged so that cells at the edges can be considered adjacent to cells on the opposite edge. This allows for grouping terms that span the edges of the map.
+
+4. **Don't Care Conditions:**
+   - If certain input combinations are irrelevant or unspecified (don't care conditions), they can be treated as either 0 or 1 for the purpose of grouping.
+
+### Simplification Procedure:
+
+1. **Identify and Group Ones:**
+   - Identify groups of adjacent 1s in the K-map. Each group should consist of 1, 2, 4, 8, etc., cells.
+
+2. **Write Sum-of-Products (SOP) Expression:**
+   - For each group, write down the product term corresponding to the input combinations in that group.
+
+3. **Combine Terms:**
+   - Combine common terms from different groups to obtain the simplified Boolean expression.
+
+4. **Include Don't Care Conditions:**
+   - If applicable, include the don't care conditions in the final expression.
+
+### Example:
+
+Let's consider a 2-variable K-map:
+
+```
+      | 00 | 01 | 11 | 10 |
+------+----+----+----+----+
+  0   |  0 |  1 |  1 |  0 |
+  1   |  1 |  0 |  1 |  1 |
+```
+
+Groups of adjacent 1s:
+- Group 1: Cells (0, 1) - Represents term A'B'
+- Group 2: Cells (2, 3) - Represents term AB'
+
+The simplified Boolean expression is: F = A'B' + AB'
+
+This is just a basic overview of Karnaugh Maps. In more complex cases, larger K-maps with more variables are used, and the process is extended accordingly. K-maps are a powerful tool for simplifying Boolean expressions, especially in the design of digital circuits where optimization is crucial.
+
+EQUATION EXPLANATION:
+The code appears to be implementing a 4-to-7 segment display driver using a BCD-to-7 segment decoder for a common anode 7-segment display. The variables A, B, C, and D represent the BCD (Binary Coded Decimal) input to the display driver. The disp_7447 function takes these BCD inputs and controls the individual segments of the 7-segment display.
+
+The Karnaugh Map (K-map) is a graphical representation used in Boolean algebra and digital logic design for the simplification of algebraic expressions. In this case, you can create K-maps for the B, C, and D outputs to simplify the Boolean expressions.
+
+Let's consider the K-maps for B, C, and D:
+
+**K-map for B:**
+```
+      | WZ
+XY    | 00 | 01 | 11 | 10 |
+---------------------------
+00    |  0 |  1 |  1 |  0 |
+01    |  1 |  0 |  1 |  1 |
+11    |  0 |  1 |  0 |  1 |
+10    |  1 |  0 |  0 |  0 |
+```
+
+**K-map for C:**
+```
+      | WZ
+XY    | 00 | 01 | 11 | 10 |
+---------------------------
+00    |  1 |  0 |  1 |  1 |
+01    |  1 |  0 |  0 |  1 |
+11    |  1 |  0 |  1 |  0 |
+10    |  0 |  1 |  1 |  0 |
+```
+
+**K-map for D:**
+```
+      | WZ
+XY    | 00 | 01 | 11 | 10 |
+---------------------------
+00    |  1 |  1 |  0 |  0 |
+01    |  0 |  1 |  1 |  1 |
+11    |  0 |  1 |  0 |  1 |
+10    |  0 |  0 |  1 |  0 |
+```
+
+Now, let's write the simplified Boolean expressions for B, C, and D based on the K-maps:
+
+**B = WX'YZ + WXY'Z' + W'X'YZ' + W'XYZ**
+
+**C = W'X'YZ + W'X'YZ' + WX'Y'Z + WXYZ'**
+
+**D = W'XZ' + WX'Y + WXY'Z + WXYZ'**
+
+These are the simplified Boolean expressions for the outputs B, C, and D based on the given K-maps and the logic conditions in your code.
+
+CODE EXPLANATION:
+Certainly! Let's break down the code line by line:
+
+```cpp
+// Declaring all variables as integers
+int Z=0, Y=0, X=0, W=1;
+int D, C, B, A;
+```
+
+This section declares integer variables `Z`, `Y`, `X`, and `W` and initializes them with values 0, 0, 0, and 1, respectively. It also declares integer variables `D`, `C`, `B`, and `A` without initializing them.
+
+```cpp
+// Code released under GNU GPL. Free to use for anything.
+```
+
+This is a comment indicating that the code is released under the GNU General Public License (GPL) and can be used freely for anything.
+
+```cpp
+void disp_7447(int D, int C, int B, int A)
+{
+  digitalWrite(2, A); //LSB
+  digitalWrite(3, B); 
+  digitalWrite(4, C); 
+  digitalWrite(5, D); //MSB
+}
+```
+
+This function `disp_7447` takes four integer parameters (`D`, `C`, `B`, `A`) and uses the `digitalWrite` function to control the output pins (2, 3, 4, 5) based on the values of these parameters. The comments indicate that pin 2 is the LSB (Least Significant Bit), and pin 5 is the MSB (Most Significant Bit).
+
+```cpp
+void setup() {
+    pinMode(2, OUTPUT);  
+    pinMode(3, OUTPUT);
+    pinMode(4, OUTPUT);
+    pinMode(5, OUTPUT);
+}
+```
+
+The `setup` function is part of the Arduino framework and runs once when the program starts. In this case, it sets the pinMode for pins 2, 3, 4, and 5 as OUTPUT, indicating that these pins will be used as output pins.
+
+```cpp
+void loop() {
+  A = 0;
+  B = (W&&!X&&!Y&&!Z) || (!W&&X&&!Y&&!Z) || (W&&!X&&Y&&!Z) || (!W&&X&&Y&&!Z);
+  C = (W&&X&&!Y&&!Z) || (!W&&!X&&Y&&!Z) || (W&&!X&&Y&&!Z) || (!W&&X&&Y&&!Z);
+  D = (W&&X&&Y&&!Z) || (!W&&!X&&!Y&&Z);
+
+  disp_7447(D, C, B, A);
+}
+```
+
+The `loop` function is also part of the Arduino framework and runs repeatedly. In this loop, `A` is set to 0, and Boolean conditions are used to calculate values for `B`, `C`, and `D` based on the values of `W`, `X`, `Y`, and `Z`. Finally, the `disp_7447` function is called with the calculated values.
+
+The Boolean conditions use logical operators (`&&` for AND, `||` for OR, `!` for NOT) to determine the values of `B`, `C`, and `D` based on the conditions involving `W`, `X`, `Y`, and `Z`.
+
+EQUATIONS EXPLANATION:
+Sure, let's break down each of the Karnaugh Map (K-map) equations in detail:
+
+### Equation for B:
+\[ B = WX'YZ + WXY'Z' + W'X'YZ' + W'XYZ \]
+
+This equation represents the Boolean expression for the B output. Let's break down the terms:
+
+- \( WX'YZ \): This term is true when W is true, X is false, Y is true, and Z is true.
+- \( WXY'Z' \): This term is true when W is true, X is true, Y is false, and Z is false.
+- \( W'X'YZ' \): This term is true when W is false, X is false, Y is true, and Z is false.
+- \( W'XYZ \): This term is true when W is false, X is true, Y is true, and Z is true.
+
+So, the overall expression \( B \) is true when any of these conditions is satisfied. It represents a combination of inputs for which the B output should be true.
+
+### Equation for C:
+\[ C = W'X'YZ + W'X'YZ' + WX'Y'Z + WXYZ' \]
+
+This equation represents the Boolean expression for the C output. Let's break down the terms:
+
+- \( W'X'YZ \): This term is true when W is false, X is false, Y is true, and Z is true.
+- \( W'X'YZ' \): This term is true when W is false, X is false, Y is true, and Z is false.
+- \( WX'Y'Z \): This term is true when W is true, X is false, Y is false, and Z is true.
+- \( WXYZ' \): This term is true when W is true, X is true, Y is true, and Z is false.
+
+So, the overall expression \( C \) is true when any of these conditions is satisfied. It represents a combination of inputs for which the C output should be true.
+
+### Equation for D:
+\[ D = W'XZ' + WX'Y + WXY'Z + WXYZ' \]
+
+This equation represents the Boolean expression for the D output. Let's break down the terms:
+
+- \( W'XZ' \): This term is true when W is false, X is true, Y is false, and Z is false.
+- \( WX'Y \): This term is true when W is true, X is false, Y is true, and Z is false.
+- \( WXY'Z \): This term is true when W is true, X is true, Y is false, and Z is true.
+- \( WXYZ' \): This term is true when W is true, X is true, Y is true, and Z is false.
+
+So, the overall expression \( D \) is true when any of these conditions is satisfied. It represents a combination of inputs for which the D output should be true.
+
+In summary, these Boolean expressions describe the conditions under which the outputs B, C, and D should be true based on the values of the input variables W, X, Y, and Z. The K-maps mentioned earlier can be used to simplify these Boolean expressions further if needed.
