@@ -1,0 +1,14 @@
+Thing's required for above code is 
+ARDUINO BOARD
+BREADBOARD 
+1 LED
+5 JUMPER WIRES
+_________________________________________________________________________________________________________________________________________________________________________
+1.Connect the Gnd of Arduino to the negative side of the Breadboard 
+2. Connect the 5v of Arduino to the postive side of the Breadboard 
+3. Connect the LED to the Breadboard 
+4. Positive side of the LED (long side) should be connected to the output pin 13 on Arduino 
+5. Short side of the LED is connected to the negative side of the Breadboard by an jumper wires 
+6. Know we have taken 2 input PIN2 and PIN3 so connect the 2,3 pin to any terminal of the Breadboard (+) or (-) and know we can see the out put 
+7. When ever we put positive to positive then LED will not glow and even for negative to negative 
+8. But the LED will glow if we keep the postive to negative vice versa

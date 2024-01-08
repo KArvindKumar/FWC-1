@@ -1,0 +1,26 @@
+// Define the input pins for a0b1 and a1b0
+#define a0b1_PIN 2
+#define a1b0_PIN 3
+
+// Define the output pin
+#define OUT_PIN 13
+
+void setup() {
+  // Set the input pins as inputs with pull-up resistors
+  pinMode(a0b1_PIN, INPUT_PULLUP);
+  pinMode(a1b0_PIN, INPUT_PULLUP);
+
+  // Set the output pin as output
+  pinMode(OUT_PIN, OUTPUT);
+}
+void loop() {
+  // Read the values of a0b1 and a1b0
+  bool a0b1 = digitalRead(a0b1_PIN);
+  bool a1b0 = digitalRead(a1b0_PIN);
+
+  // Perform logical XOR operation
+  bool result = a0b1^a1b0;
+
+  // Write the result to the output pin
+  digitalWrite(OUT_PIN, result);
+}
