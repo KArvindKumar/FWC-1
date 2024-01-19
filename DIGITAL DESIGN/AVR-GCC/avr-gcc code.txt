@@ -1,0 +1,48 @@
+#include <avr/io.h>
+#include <util/delay.h>
+#include <stdbool.h>
+
+// Define the pins for the input and output
+#define A 2 // Input A
+#define B 3 // Input B
+#define Z 5 // Output Z (example pin for PORTD)
+
+void setup();
+void loop();
+
+int main(void) {
+  setup();
+
+  while (1) {
+    loop();
+  }
+
+  return 0;
+}
+
+void setup() {
+  // Set the input pins as inputs with pull-up resistors
+  PORTD |= (1 << A) | (1 << B);
+
+  // Set the output pin as output
+  DDRD |= (1 << Z);
+}
+
+void loop() {
+  // Read the values of the input pins
+  bool a = PIND & (1 << A);
+  bool b = PIND & (1 << B);
+
+  // Evaluate the Boolean expression for Z
+  bool z = (b && a) || !a;
+
+  // Write the value of Z to the output pin
+  if (z) {
+    PORTD |= (1 << Z);
+  } else {
+    PORTD &= ~(1 << Z);
+  }
+
+  // Add a delay if needed (replace 100 with the desired delay time in milliseconds)
+  _delay_ms(100);
+}
