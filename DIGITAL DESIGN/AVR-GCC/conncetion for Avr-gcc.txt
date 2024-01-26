@@ -1,5 +1,0 @@
-1. connect the Arudino 5v to the bread bord "+"connect the Arudino Gnad to the bread bord "-".
-2. "2"and "3" are the input so connect it to the Arudino of "2" and "3" pins.
-3. connect an output pin 13 to the positive side(Long side) of the LED placed on the breadbord.
-4. The Negative side (short side) to an resestor and connect that resistor other end to gnad.
-5. now change the pin's to "+" and "-" by that the output will change as the truth table. 
