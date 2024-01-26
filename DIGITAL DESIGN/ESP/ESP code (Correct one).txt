@@ -1,0 +1,26 @@
+//Blink program for onboard LED on esp32q
+#include <Arduino.h>
+
+void setup() {
+  pinMode(2,OUTPUT);
+  // put your setup code here, to run once:
+}
+
+void loop() {
+  int X=1;
+  int Y=1;
+  int Z=1; // Declare and initialize Z
+  int W=1;
+  int R1=(X && !Y && Z && W) || (X && Y && Z && !W); // Remove extra &&
+  int R2=(X && Y);
+  if(R1==R2){	
+    digitalWrite(2,HIGH);
+    delay(1000);
+    }
+  else{
+    digitalWrite(2,LOW);
+    delay(1000);
+    }
+
+  // put your main code here, to run repeatedly:
+}
