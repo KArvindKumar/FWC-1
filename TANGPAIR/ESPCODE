@@ -1,0 +1,115 @@
+#include <Arduino.h>
+#include <WiFi.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include "matfun.h"
+#include "geofun.h"
+
+AsyncWebServer server(80);
+
+const char* ssid = "TOAD SAGE";
+const char* password = "12345678";
+
+const char index_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Tangential Points</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1>Calculate Tangential Points</h1>
+  <form action="/" method="post">
+    <label for="x1">Vertex A (x, y):</label><br>
+    <input type="text" id="x1" name="x1" required>
+    <input type="text" id="y1" name="y1" required><br><br>
+    <label for="x2">Vertex B (x, y):</label><br>
+    <input type="text" id="x2" name="x2" required>
+    <input type="text" id="y2" name="y2" required><br><br>
+    <label for="x3">Vertex C (x, y):</label><br>
+    <input type="text" id="x3" name="x3" required>
+    <input type="text" id="y3" name="y3" required><br><br>
+    <button type="submit">Calculate</button>
+  </form>
+  <div id="result"></div>
+  <script>
+    const form = document.querySelector('form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const response = await fetch('/', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await response.text();
+      document.getElementById('result').innerHTML = result;
+    });
+  </script>
+</body>
+</html>
+)rawliteral";
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(2000);
+  }
+  Serial.println();
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", index_html);
+  });
+
+  server.on("/", HTTP_POST, [](AsyncWebServerRequest *request){
+    String response;
+    int x1 = request->getParam("x1")->value().toInt();
+    int y1 = request->getParam("y1")->value().toInt();
+    int x2 = request->getParam("x2")->value().toInt();
+    int y2 = request->getParam("y2")->value().toInt();
+    int x3 = request->getParam("x3")->value().toInt();
+    int y3 = request->getParam("y3")->value().toInt();
+
+    // Creating matrices for vertices
+    double **vertexA = createMat(2, 1);
+    double **vertexB = createMat(2, 1);
+    double **vertexC = createMat(2, 1);
+
+    // Assigning values to vertices
+    vertexA[0][0] = x1;
+    vertexA[1][0] = y1;
+    vertexB[0][0] = x2;
+    vertexB[1][0] = y2;
+    vertexC[0][0] = x3;
+    vertexC[1][0] = y3;
+
+    // Calculate tangential points using geometric operations
+    double **tangentialPoint = Matsec(vertexA, vertexB, 2, 1);
+
+    response += "Coordinates of tangential point E: ";
+    response += String(tangentialPoint[0][0], 6);
+    response += ", ";
+    response += String(tangentialPoint[1][0], 6);
+    response += "<br>Coordinates of tangential point F: ";
+    response += String(tangentialPoint[0][1], 6);
+    response += ", ";
+    response += String(tangentialPoint[1][1], 6);
+
+    request->send(200, "text/html", response);
+
+    // Freeing allocated memory
+    freeMat(vertexA, 2);
+    freeMat(vertexB, 2);
+    freeMat(vertexC, 2);
+    freeMat(tangentialPoint, 2);
+  });
+
+  server.begin();
+}
+
+void loop() {}
+
