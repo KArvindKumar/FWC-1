@@ -1,0 +1,149 @@
+#include <Arduino.h>
+#include <WiFi.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include "matfun.h"
+#include "geofun.h"
+
+AsyncWebServer server(80);
+
+const char* ssid = "TOAD SAGE";
+const char* password = "12345678";
+
+const char* PARAM_X1 = "x1";
+const char* PARAM_Y1 = "y1";
+const char* PARAM_X2 = "x2";
+const char* PARAM_Y2 = "y2";
+const char* PARAM_X3 = "x3";
+const char* PARAM_Y3 = "y3";
+
+const char index_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML><html><head>
+  <title>Tangential Points</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html {font-family: Times New Roman; display: inline-block; text-align: center;}
+    h2 {font-size: 2.0rem; color: blue;}
+  </style> 
+  <script>
+    function updateResults(response) {
+      document.getElementById("results").innerHTML = response;
+    }
+
+    function calculate() {
+      var form = document.getElementById("TriangleForm");
+      var formData = new FormData(form);
+
+      fetch('/TangentialPoints', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.text())
+      .then(data => updateResults(data));
+    }
+  </script>
+  </head>
+  <body>
+  <h2>Calculate Tangential Points</h2>
+  <form id="TriangleForm" action="/TangentialPoints" method="POST">
+    <label for="x1">Vertex A (x, y):</label>
+    <input type="text" name="x1" required>
+    <input type="text" name="y1" required><br>
+
+    <label for="x2">Vertex B (x, y):</label>
+    <input type="text" name="x2" required>
+    <input type="text" name="y2" required><br>
+
+    <label for="x3">Vertex C (x, y):</label>
+    <input type="text" name="x3" required>
+    <input type="text" name="y3" required><br><br>
+
+    <input type="button" value="Calculate" onclick="calculate()">
+  </form><br>
+  <div id="results"></div>
+</body></html>)rawliteral";
+
+void notFound(AsyncWebServerRequest *request) {
+  request->send(404, "text/plain", "Not found");
+}
+
+void setup() {
+  Serial.begin(115200);
+  
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+  
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  server.on("/TangentialPoints", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send_P(200, "text/html", index_html);
+  });
+
+  server.on("/TangentialPoints", HTTP_POST, [](AsyncWebServerRequest *request) {
+    int x1 = request->arg(PARAM_X1).toInt();
+    int y1 = request->arg(PARAM_Y1).toInt();
+    int x2 = request->arg(PARAM_X2).toInt();
+    int y2 = request->arg(PARAM_Y2).toInt();
+    int x3 = request->arg(PARAM_X3).toInt();
+    int y3 = request->arg(PARAM_Y3).toInt();
+
+    double **vertexA = createMat(2, 1);
+    double **vertexB = createMat(2, 1);
+    double **vertexC = createMat(2, 1);
+
+    vertexA[0][0] = x1;
+    vertexA[1][0] = y1;
+    vertexB[0][0] = x2;
+    vertexB[1][0] = y2;
+    vertexC[0][0] = x3;
+    vertexC[1][0] = y3;
+
+    double **tangentialPoint = createMat(2, 2);
+    double **sideAB = Matsub(vertexB, vertexA, 2, 1);
+    double **sideBC = Matsub(vertexC, vertexB, 2, 1);
+    double **sideCA = Matsub(vertexA, vertexC, 2, 1);
+
+    double a = Matnorm(sideAB, 2);
+    double b = Matnorm(sideBC, 2);
+    double c = Matnorm(sideCA, 2);
+    double x_val = (a + c - b) / 2;
+    double y_val = (a + b - c) / 2;
+    double z_val = (b + c - a) / 2;
+
+    tangentialPoint[0][0] = (y_val * vertexA[0][0] + x_val * vertexB[0][0]) / (y_val + x_val);
+    tangentialPoint[1][0] = (y_val * vertexA[1][0] + x_val * vertexB[1][0]) / (y_val + x_val);
+    tangentialPoint[0][1] = (x_val * vertexC[0][0] + z_val * vertexA[0][0]) / (x_val + z_val);
+    tangentialPoint[1][1] = (x_val * vertexC[1][0] + z_val * vertexA[1][0]) / (x_val + z_val);
+
+    String response = "Coordinates of tangential point E: ";
+    response += String(tangentialPoint[0][0], 6);
+    response += ", ";
+    response += String(tangentialPoint[1][0], 6);
+    response += "<br>Coordinates of tangential point F: ";
+    response += String(tangentialPoint[0][1], 6);
+    response += ", ";
+    response += String(tangentialPoint[1][1], 6);
+
+    request->send(200, "text/html", response);
+
+    freeMat(vertexA, 2);
+    freeMat(vertexB, 2);
+    freeMat(vertexC, 2);
+    freeMat(tangentialPoint, 2);
+    freeMat(sideAB, 2);
+    freeMat(sideBC, 2);
+    freeMat(sideCA, 2);
+  });
+
+  server.onNotFound(notFound);
+  server.begin();
+}
+
+void loop() {
+  // Nothing to do here
+}
